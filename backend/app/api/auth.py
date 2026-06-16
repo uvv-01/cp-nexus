@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.schemas.user import UserCreate
 from app.models.user import User
@@ -25,13 +26,18 @@ def register(
 ):
     existing_user = (
         db.query(User)
-        .filter(User.email == user.email)
+        .filter(
+            or_(
+                User.email == user.email,
+                User.username == user.username
+            )
+        )
         .first()
     )
 
     if existing_user:
         return {
-            "error": "Email already registered"
+            "error": "Email or username already registered"
         }
 
     new_user = User(
@@ -59,7 +65,12 @@ def login(
 ):
     existing_user = (
         db.query(User)
-        .filter(User.email == form_data.username)
+        .filter(
+            or_(
+                User.email == form_data.username,
+                User.username == form_data.username
+            )
+        )
         .first()
     )
 
