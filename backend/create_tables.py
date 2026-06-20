@@ -1,6 +1,8 @@
 from app.core.database import Base, engine
 from app.models.user import User
 from app.models.task import Task
+from app.models.problem import Problem
+
 
 Base.metadata.create_all(bind=engine)
 
